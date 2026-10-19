@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Römische Zahlen – Die Zahlenwerkstatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stone:#F2E6CC;
+    --stone-dark:#E1CE9F;
+    --marble:#FBF6E9;
+    --marble-line: rgba(43,36,32,.14);
+    --ink:#2B2420;
+    --ink-soft:#5B4E3E;
+    --brick:#A8412E;
+    --brick-dark:#822F20;
+    --bronze:#AD7C2E;
+    --bronze-light:#D7B26B;
+    --fresco:#3F6656;
+    --fresco-dark:#2C4A3E;
+    --wine:#7C2E2E;
+    --shadow: 0 10px 30px rgba(43,36,32,.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(173,124,46,.10), transparent 45%),
+      radial-gradient(circle at 100% 20%, rgba(63,102,86,.08), transparent 40%),
+      var(--stone);
+    color:var(--ink);
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+    padding:28px 18px 64px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header{text-align:center; margin-bottom:34px;}
+  .eyebrow{
+    font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.32em;
+    color:var(--bronze); font-weight:600; margin-bottom:10px;
+  }
+  h1{
+    font-family:'Cinzel',serif; font-weight:900; font-size:clamp(2.1rem,6vw,3.4rem);
+    letter-spacing:.06em; margin:0 0 10px; color:var(--ink);
+    text-shadow: 0 1px 0 rgba(255,255,255,.5), 0 2px 0 rgba(43,36,32,.06);
+  }
+  .subtitle{color:var(--ink-soft); font-size:1.02rem; max-width:520px; margin:0 auto;}
+  .frieze{ display:flex; justify-content:center; gap:10px; margin:18px 0 4px; opacity:.8;}
+  .frieze svg{width:120px; height:14px;}
+
+  /* ---------- Nav ---------- */
+  nav{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:10px;
+    margin-bottom:26px;
+  }
+  .tabbtn{
+    font-family:'Nunito',sans-serif; cursor:pointer; border:2px solid transparent;
+    background:var(--marble); border-radius:14px; padding:12px 8px;
+    text-align:center; transition:.15s ease; box-shadow: var(--shadow);
+  }
+  .tabbtn .num{
+    font-family:'Cinzel',serif; font-weight:700; font-size:1.15rem; color:var(--bronze);
+    display:block; margin-bottom:2px;
+  }
+  .tabbtn .lbl{font-size:.78rem; font-weight:700; color:var(--ink-soft); display:block;}
+  .tabbtn:hover{transform:translateY(-2px);}
+  .tabbtn.active{ border-color:var(--brick); background:#fff; }
+  .tabbtn.active .num, .tabbtn.active .lbl{color:var(--brick-dark);}
+  .tabbtn:focus-visible{outline:3px solid var(--bronze); outline-offset:2px;}
+
+  /* ---------- Panels / Tablet cards ---------- */
+  .panel{display:none; animation:fade .35s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+
+  .tablet{
+    background:var(--marble); border-radius:18px; padding:26px 26px 28px;
+    box-shadow: var(--shadow);
+    border-top:6px solid var(--brick);
+    margin-bottom:22px;
+    position:relative;
+  }
+  .tablet h2{
+    font-family:'Cinzel',serif; font-size:1.35rem; margin:0 0 6px; color:var(--brick-dark);
+    letter-spacing:.02em;
+  }
+  .tablet h3{
+    font-family:'Cinzel',serif; font-size:1.02rem; margin:22px 0 10px; color:var(--fresco-dark);
+  }
+  .tablet p{line-height:1.62; color:var(--ink-soft); margin:0 0 10px;}
+  .lead{color:var(--ink); font-size:1.02rem;}
+
+  /* symbol grid */
+  .symgrid{
+    display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin:16px 0 6px;
+  }
+  .symtile{
+    background:var(--stone); border-radius:12px; padding:12px 4px; text-align:center;
+    border:1px solid var(--marble-line);
+  }
+  .symtile .g{font-family:'Cinzel',serif; font-weight:700; font-size:1.5rem; color:var(--brick);}
+  .symtile .v{font-size:.78rem; color:var(--ink-soft); font-weight:700; margin-top:2px;}
+  @media(max-width:640px){ .symgrid{grid-template-columns:repeat(4,1fr);} }
+
+  .mnemonic{
+    background:linear-gradient(135deg, rgba(173,124,46,.12), rgba(63,102,86,.08));
+    border:1px dashed var(--bronze-light); border-radius:12px; padding:12px 16px;
+    font-size:.92rem; color:var(--ink-soft); margin-top:14px;
+  }
+  .mnemonic b{color:var(--bronze);}
+
+  .rulebox{
+    background:var(--stone); border-radius:12px; padding:14px 16px; margin-bottom:10px;
+    border-left:4px solid var(--fresco);
+  }
+  .rulebox b{color:var(--fresco-dark); font-family:'Cinzel',serif; font-size:.92rem;}
+
+  /* converter widget */
+  .converter{
+    display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:6px;
+  }
+  @media(max-width:680px){ .converter{grid-template-columns:1fr;} }
+  .convcard{
+    background:var(--stone); border-radius:14px; padding:18px;
+  }
+  .convcard label{ display:block; font-weight:800; font-size:.85rem; color:var(--ink-soft); margin-bottom:8px;}
+  .inputrow{display:flex; gap:8px;}
+  input[type=text], input[type=number]{
+    flex:1; border:2px solid var(--marble-line); border-radius:10px; padding:10px 12px;
+    font-size:1.1rem; font-family:'Cinzel',serif; background:#fff; color:var(--ink);
+    min-width:0;
+  }
+  input:focus-visible, button:focus-visible, select:focus-visible{
+    outline:3px solid var(--bronze); outline-offset:2px;
+  }
+  button{
+    font-family:'Nunito',sans-serif; font-weight:800; border:none; border-radius:10px;
+    padding:10px 16px; cursor:pointer; font-size:.92rem; transition:.15s ease;
+  }
+  button:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+  button:active{ transform:translateY(0); }
+  .btn-brick{ background:var(--brick); color:#fff; }
+  .btn-fresco{ background:var(--fresco); color:#fff; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:2px solid var(--marble-line); }
+
+  .result-slab{
+    margin-top:14px; background:#fff; border-radius:10px; padding:14px;
+    min-height:44px; border:1px solid var(--marble-line);
+  }
+  .roman-display{
+    font-family:'Cinzel',serif; font-size:1.9rem; letter-spacing:.06em; word-break:break-all;
+  }
+  .chunk-add{color:var(--ink);}
+  .chunk-sub{color:var(--brick); text-decoration:underline; text-decoration-color:var(--bronze-light); text-decoration-thickness:3px; text-underline-offset:4px;}
+  .breakdown{font-size:.86rem; color:var(--ink-soft); margin-top:8px;}
+  .errmsg{color:var(--wine); font-size:.9rem; font-weight:700; margin-top:8px;}
+
+  /* exercise */
+  .exercise-top{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;}
+  .diffgroup{display:flex; gap:6px;}
+  .diffbtn{
+    background:var(--stone); color:var(--ink-soft); border:2px solid transparent; padding:7px 13px;
+    border-radius:20px; font-size:.82rem;
+  }
+  .diffbtn.active{ background:var(--fresco); color:#fff; }
+  .scorebar{font-size:.86rem; color:var(--ink-soft); font-weight:700;}
+  .scorebar span{color:var(--brick-dark);}
+
+  .question-slab{
+    background:linear-gradient(160deg, #fff, var(--stone));
+    border-radius:16px; padding:36px 20px; text-align:center; margin-bottom:18px;
+    border:1px solid var(--marble-line);
+  }
+  .question-slab .big{
+    font-family:'Cinzel',serif; font-size:clamp(2.4rem,9vw,3.6rem); color:var(--brick-dark);
+    letter-spacing:.05em;
+  }
+  .answer-row{ display:flex; gap:10px; justify-content:center; max-width:360px; margin:0 auto; }
+  .feedback{ min-height:30px; text-align:center; font-weight:800; margin:12px 0; font-size:1rem;}
+  .feedback.ok{color:var(--fresco-dark);}
+  .feedback.no{color:var(--wine);}
+  .actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+
+  /* addition steps */
+  .sumline{
+    display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap;
+    font-family:'Cinzel',serif; font-size:1.6rem; margin:8px 0 18px;
+  }
+  .sumline .op{color:var(--bronze); font-size:1.3rem;}
+  .steplog{
+    background:var(--stone); border-radius:12px; padding:16px 18px; margin-top:6px;
+  }
+  .steprow{
+    display:flex; gap:10px; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--marble-line);
+    font-size:.94rem;
+  }
+  .steprow:last-child{border-bottom:none;}
+  .steprow .stepnum{ font-family:'Cinzel',serif; color:var(--bronze); font-weight:700; min-width:20px;}
+  .steprow .stepbody b{color:var(--fresco-dark);}
+  .stepstring{font-family:'Cinzel',serif; font-size:1.15rem; color:var(--ink);}
+  .stepbtns{display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap;}
+
+  .pickrow{display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:10px;}
+  select{
+    border:2px solid var(--marble-line); border-radius:10px; padding:9px 10px; font-family:'Cinzel',serif;
+    font-size:1rem; background:#fff; color:var(--ink);
+  }
+
+  footer{ text-align:center; color:var(--ink-soft); font-size:.8rem; margin-top:36px; opacity:.75;}
+  .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0);}
+
+  @media (prefers-reduced-motion: reduce){
+    .panel, .tabbtn, button{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">MATHEMATIK · 5. KLASSE · GYMNASIUM</div>
+    <h1>RÖMISCHE ZAHLEN</h1>
+    <p class="subtitle">Von Grundsteinen zu Zahltafeln — entdecke, wie die Römer Zahlen schrieben, und übe, sie zu lesen und zu addieren.</p>
+    <div class="frieze" aria-hidden="true">
+      <svg viewBox="0 0 120 14"><polyline points="0,14 10,2 20,14 30,2 40,14 50,2 60,14 70,2 80,14 90,2 100,14 110,2 120,14" fill="none" stroke="#AD7C2E" stroke-width="1.4"/></svg>
+    </div>
+  </header>
+
+  <nav id="tabnav">
+    <button class="tabbtn active" data-panel="p1"><span class="num">I</span><span class="lbl">Erkunden</span></button>
+    <button class="tabbtn" data-panel="p2"><span class="num">II</span><span class="lbl">Übung: Lesen</span></button>
+    <button class="tabbtn" data-panel="p3"><span class="num">III</span><span class="lbl">Addieren lernen</span></button>
+    <button class="tabbtn" data-panel="p4"><span class="num">IV</span><span class="lbl">Übung: Addieren</span></button>
+  </nav>
+
+  <!-- ================= PANEL I: ERKUNDEN ================= -->
+  <section class="panel active" id="p1">
+    <div class="tablet">
+      <h2>Die Grundsteine der römischen Zahlen</h2>
+      <p class="lead">Die Römer besaßen nur sieben verschiedene Zeichen. Aus ihnen wurde jede Zahl zusammengesetzt — wie aus Steinen eine Mauer.</p>
+      <div class="symgrid">
+        <div class="symtile"><div class="g">I</div><div class="v">1</div></div>
+        <div class="symtile"><div class="g">V</div><div class="v">5</div></div>
+        <div class="symtile"><div class="g">X</div><div class="v">10</div></div>
+        <div class="symtile"><div class="g">L</div><div class="v">50</div></div>
+        <div class="symtile"><div class="g">C</div><div class="v">100</div></div>
+        <div class="symtile"><div class="g">D</div><div class="v">500</div></div>
+        <div class="symtile"><div class="g">M</div><div class="v">1000</div></div>
+      </div>
+      <div class="mnemonic"><b>Merksatz:</b> „<b>I</b>mmer <b>V</b>iele <b>X</b>-Beinige <b>L</b>öwen <b>C</b>reisen <b>D</b>urch <b>M</b>arokko.“ — der Anfangsbuchstabe jedes Wortes liefert dir die sieben Zeichen in der richtigen Reihenfolge.</div>
+
+      <h3>Drei Regeln, mit denen man jede Zahl bauen kann</h3>
+      <div class="rulebox"><b>1. Aneinanderreihung</b><br>Gleiche Zeichen werden addiert — aber höchstens drei Mal hintereinander. III = 3, aber „IIII“ gibt es nicht.</div>
+      <div class="rulebox"><b>2. Subtraktion</b><br>Steht ein kleineres Zeichen <i>vor</i> einem größeren, wird es abgezogen. Erlaubt sind nur: IV (4), IX (9), XL (40), XC (90), CD (400), CM (900).</div>
+      <div class="rulebox"><b>3. Von groß nach klein</b><br>Von links nach rechts wird der Wert der Zeichen nie größer. Die größte "Einheit" steht immer zuerst.</div>
+    </div>
+
+    <div class="tablet">
+      <h2>Die Zahlenwerkstatt</h2>
+      <p>Verwandle Zahlen in beide Richtungen und sieh, wie sie „gebaut" sind. Zeichen in <span style="color:var(--brick); font-weight:800;">Bronze-Unterstrich</span> zeigen eine Subtraktion.</p>
+      <div class="converter">
+        <div class="convcard">
+          <label for="arabInput">Arabische Zahl → Römisch (1–3999)</label>
+          <div class="inputrow">
+            <input type="number" id="arabInput" min="1" max="3999" placeholder="z. B. 1994">
+            <button class="btn-brick" id="toRomanBtn">In Stein meißeln</button>
+          </div>
+          <div class="result-slab" id="toRomanResult" aria-live="polite"></div>
+        </div>
+        <div class="convcard">
+          <label for="romanInput">Römische Zahl → Arabisch</label>
+          <div class="inputrow">
+            <input type="text" id="romanInput" placeholder="z. B. MCMXCIV">
+            <button class="btn-fresco" id="toArabBtn">Wert entschlüsseln</button>
+          </div>
+          <div class="result-slab" id="toArabResult" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL II: ÜBUNG LESEN ================= -->
+  <section class="panel" id="p2">
+    <div class="tablet">
+      <h2>Übung: Römisch → Arabisch</h2>
+      <p>Lies die Zahltafel und tippe den arabischen Wert ein.</p>
+      <div class="exercise-top">
+        <div class="diffgroup" id="diff2" role="group" aria-label="Schwierigkeit wählen">
+          <button class="diffbtn active" data-range="1-30">Leicht · 1–30</button>
+          <button class="diffbtn" data-range="1-200">Mittel · 1–200</button>
+          <button class="diffbtn" data-range="1-3999">Schwer · 1–3999</button>
+        </div>
+        <div class="scorebar">Richtig: <span id="score2">0</span> / <span id="tries2">0</span></div>
+      </div>
+
+      <div class="question-slab">
+        <div class="big" id="romanQuestion" aria-live="polite">—</div>
+      </div>
+      <div class="answer-row">
+        <label for="arabAnswer" class="sr-only">Deine Antwort</label>
+        <input type="number" id="arabAnswer" placeholder="Deine Antwort">
+        <button class="btn-brick" id="checkBtn2">Prüfen</button>
+      </div>
+      <div class="feedback" id="feedback2" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn-ghost" id="newBtn2">Neue Zahl</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL III: ADDIEREN LERNEN ================= -->
+  <section class="panel" id="p3">
+    <div class="tablet">
+      <h2>Wie man Zahltafeln zusammenlegt</h2>
+      <p>Römische Zahlen haben keine Stellenwerte wie unsere Ziffern — man kann sie nicht einfach untereinanderschreiben. Stattdessen haben die Römer alle Zeichen wie Rechensteine zusammengelegt und dann neu <b>gebündelt</b>: fünf gleiche kleine Steine wurden gegen einen größeren getauscht.</p>
+
+      <h3>Beispiel: XIV + XIX</h3>
+      <div class="sumline">
+        <span>XIV</span><span class="op">+</span><span>XIX</span>
+      </div>
+      <div class="stepbtns">
+        <button class="btn-fresco" id="stepBtn">Nächster Schritt</button>
+        <button class="btn-ghost" id="stepReset">Von vorn</button>
+      </div>
+      <div class="steplog" id="stepLog" aria-live="polite"></div>
+    </div>
+
+    <div class="tablet">
+      <h2>Probier's selbst</h2>
+      <p>Wähle zwei römische Zahlen und lass dir den vollständigen Rechenweg zeigen.</p>
+      <div class="pickrow">
+        <select id="pickA"></select>
+        <span class="op" style="font-family:'Cinzel',serif;">+</span>
+        <select id="pickB"></select>
+        <button class="btn-brick" id="pickShow">Rechenweg zeigen</button>
+      </div>
+      <div class="steplog" id="pickLog" style="margin-top:16px; display:none;"></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL IV: ÜBUNG ADDIEREN ================= -->
+  <section class="panel" id="p4">
+    <div class="tablet">
+      <h2>Übung: Römische Zahlen addieren</h2>
+      <p>Berechne die Summe und schreibe das Ergebnis als römische Zahl.</p>
+      <div class="exercise-top">
+        <div class="diffgroup" id="diff4" role="group" aria-label="Schwierigkeit wählen">
+          <button class="diffbtn active" data-range="20">Leicht · bis 20</button>
+          <button class="diffbtn" data-range="100">Mittel · bis 100</button>
+          <button class="diffbtn" data-range="500">Schwer · bis 500</button>
+        </div>
+        <div class="scorebar">Richtig: <span id="score4">0</span> / <span id="tries4">0</span></div>
+      </div>
+
+      <div class="question-slab">
+        <div class="sumline" id="additionQuestion">
+          <span>—</span><span class="op">+</span><span>—</span>
+        </div>
+      </div>
+      <div class="answer-row">
+        <label for="romanAnswer" class="sr-only">Deine Antwort in römischen Zahlen</label>
+        <input type="text" id="romanAnswer" placeholder="z. B. XXXIII">
+        <button class="btn-brick" id="checkBtn4">Prüfen</button>
+      </div>
+      <div class="feedback" id="feedback4" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn-ghost" id="newBtn4">Neue Aufgabe</button>
+        <button class="btn-ghost" id="solveBtn4">Rechenweg zeigen</button>
+      </div>
+      <div class="steplog" id="solveLog4" style="margin-top:14px; display:none;"></div>
+    </div>
+  </section>
+
+  <footer>Zahlenwerkstatt · für den Mathematikunterricht Klasse 5 · Werte bleiben nur während dieser Sitzung erhalten</footer>
+</div>
+
+<script>
+/* ================= Roman numeral engine ================= */
+const STD_MAP = [
+  [1000,'M','add'],[900,'CM','sub'],[500,'D','add'],[400,'CD','sub'],
+  [100,'C','add'],[90,'XC','sub'],[50,'L','add'],[40,'XL','sub'],
+  [10,'X','add'],[9,'IX','sub'],[5,'V','add'],[4,'IV','sub'],[1,'I','add']
+];
+function getRomanChunks(num){
+  let n = num, chunks = [];
+  for(const [v,s,t] of STD_MAP){
+    while(n >= v){ chunks.push({value:v, symbol:s, type:t}); n -= v; }
+  }
+  return chunks;
+}
+function toRoman(num){ return getRomanChunks(num).map(c=>c.symbol).join(''); }
+
+function fromRoman(strRaw){
+  const str = (strRaw||'').trim().toUpperCase();
+  const valid = /^M{0,3}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/;
+  if(!str || !valid.test(str)) return null;
+  const map = {I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  let total = 0;
+  for(let i=0;i<str.length;i++){
+    const cur = map[str[i]], nxt = map[str[i+1]];
+    if(nxt && cur < nxt){ total -= cur; } else { total += cur; }
+  }
+  return total;
+}
+
+function toAdditiveRoman(num){
+  const map = [[1000,'M'],[500,'D'],[100,'C'],[50,'L'],[10,'X'],[5,'V'],[1,'I']];
+  let n = num, res = '';
+  for(const [v,s] of map){ while(n >= v){ res += s; n -= v; } }
+  return res;
+}
+function countsFromString(str){
+  const counts = {I:0,V:0,X:0,L:0,C:0,D:0,M:0};
+  for(const ch of str){ counts[ch]++; }
+  return counts;
+}
+function countsToOrderedString(counts){
+  const order = ['M','D','C','L','X','V','I'];
+  return order.map(s => s.repeat(counts[s]||0)).join('');
+}
+function bundleWithLog(countsIn){
+  const counts = Object.assign({I:0,V:0,X:0,L:0,C:0,D:0,M:0}, countsIn);
+  const order = ['I','V','X','L','C','D','M'];
+  const ratio = {I:5,V:2,X:5,L:2,C:5,D:2};
+  const log = [];
+  let changed = true;
+  while(changed){
+    changed = false;
+    for(let i=0;i<order.length-1;i++){
+      const sym = order[i], next = order[i+1], need = ratio[sym];
+      if(counts[sym] >= need){
+        counts[sym] -= need;
+        counts[next] = (counts[next]||0) + 1;
+        changed = true;
+        log.push({sym, need, next, snapshot: countsToOrderedString(counts)});
+      }
+    }
+  }
+  return {counts, log};
+}
+function countsTotal(counts){
+  const val = {I:1,V:5,X:10,L:50,C:100,D:500,M:1000};
+  return Object.keys(counts).reduce((s,k)=> s + counts[k]*val[k], 0);
+}
+
+/* Build the full step description list for a + b (both roman strings) */
+function buildAdditionSteps(aRoman, bRoman){
+  const aVal = fromRoman(aRoman), bVal = fromRoman(bRoman);
+  const aAdd = toAdditiveRoman(aVal), bAdd = toAdditiveRoman(bVal);
+  const combined = aAdd + bAdd;
+  const countsStart = countsFromString(combined);
+  const sortedStart = countsToOrderedString(countsStart);
+  const {counts: finalCounts, log} = bundleWithLog(countsStart);
+  const total = countsTotal(finalCounts);
+  const resultRoman = toRoman(total);
+
+  const steps = [];
+  steps.push({
+    title: '1 · In Einzelsteine zerlegen',
+    body: `${aRoman} = <b>${aAdd}</b> &nbsp;&nbsp; ${bRoman} = <b>${bAdd}</b>`,
+    display: null
+  });
+  steps.push({
+    title: '2 · Zusammenlegen &amp; sortieren',
+    body: `Alle Zeichen zusammen, von groß nach klein sortiert:`,
+    display: sortedStart
+  });
+  if(log.length === 0){
+    steps.push({
+      title: '3 · Bündeln',
+      body: `Hier lässt sich nichts mehr bündeln — es gibt nie 5 gleiche oder 2 mittlere Zeichen.`,
+      display: sortedStart
+    });
+  } else {
+    log.forEach((l, i) => {
+      steps.push({
+        title: `3.${i+1} · Bündeln`,
+        body: `${l.need}&times;${l.sym} wird zu 1&times;${l.next} getauscht:`,
+        display: l.snapshot
+      });
+    });
+  }
+  steps.push({
+    title: `${log.length ? '4' : '3'} · Ergebnis`,
+    body: `${aVal} + ${bVal} = ${total}. In Standardschreibweise:`,
+    display: resultRoman,
+    final: true
+  });
+  return {steps, resultRoman, aVal, bVal, total};
+}
+
+/* ================= Tabs ================= */
+document.querySelectorAll('.tabbtn').forEach(btn=>{
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tabbtn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.panel).classList.add('active');
+  });
+});
+
+/* ================= Panel I: Werkstatt ================= */
+function renderRomanColored(num){
+  const chunks = getRomanChunks(num);
+  const html = chunks.map(c => `<span class="${c.type==='sub' ? 'chunk-sub':'chunk-add'}">${c.symbol}</span>`).join('');
+  const breakdown = chunks.map(c => `${c.value}<span style="color:var(--ink-soft)">(${c.symbol})</span>`).join(' + ');
+  return {html, breakdown};
+}
+document.getElementById('toRomanBtn').addEventListener('click', () => {
+  const el = document.getElementById('arabInput');
+  const out = document.getElementById('toRomanResult');
+  const n = parseInt(el.value, 10);
+  if(!n || n < 1 || n > 3999){
+    out.innerHTML = `<div class="errmsg">Bitte eine ganze Zahl zwischen 1 und 3999 eingeben.</div>`;
+    return;
+  }
+  const {html, breakdown} = renderRomanColored(n);
+  out.innerHTML = `<div class="roman-display">${html}</div><div class="breakdown">${n} = ${breakdown}</div>`;
+});
+document.getElementById('toArabBtn').addEventListener('click', () => {
+  const el = document.getElementById('romanInput');
+  const out = document.getElementById('toArabResult');
+  const val = fromRoman(el.value);
+  if(val === null){
+    out.innerHTML = `<div class="errmsg">Das ist keine gültige römische Zahl. Prüfe die Wiederholungsregel (max. 3 gleiche Zeichen) und die Subtraktionsregel (nur IV, IX, XL, XC, CD, CM sind erlaubt).</div>`;
+    return;
+  }
+  const {html} = renderRomanColored(val);
+  out.innerHTML = `<div class="roman-display">${html}</div><div class="breakdown">Wert: <b>${val}</b></div>`;
+});
+
+/* ================= Panel II: Übung Lesen ================= */
+let range2 = [1,30];
+let cur2 = null;
+let score2 = 0, tries2 = 0;
+
+function newQuestion2(){
+  const [lo,hi] = range2;
+  cur2 = Math.floor(Math.random()*(hi-lo+1))+lo;
+  document.getElementById('romanQuestion').textContent = toRoman(cur2);
+  document.getElementById('arabAnswer').value = '';
+  document.getElementById('feedback2').textContent = '';
+  document.getElementById('feedback2').className = 'feedback';
+  document.getElementById('arabAnswer').focus();
+}
+document.getElementById('diff2').addEventListener('click', (e)=>{
+  const b = e.target.closest('.diffbtn');
+  if(!b) return;
+  document.querySelectorAll('#diff2 .diffbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const [lo,hi] = b.dataset.range.split('-').map(Number);
+  range2 = [lo,hi];
+  newQuestion2();
+});
+document.getElementById('checkBtn2').addEventListener('click', checkAnswer2);
+document.getElementById('arabAnswer').addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer2(); });
+function checkAnswer2(){
+  const val = parseInt(document.getElementById('arabAnswer').value, 10);
+  const fb = document.getElementById('feedback2');
+  tries2++;
+  if(val === cur2){
+    score2++;
+    fb.textContent = 'Richtig! ' + toRoman(cur2) + ' = ' + cur2;
+    fb.className = 'feedback ok';
+  } else {
+    fb.textContent = `Leider nicht. ${toRoman(cur2)} = ${cur2}`;
+    fb.className = 'feedback no';
+  }
+  document.getElementById('score2').textContent = score2;
+  document.getElementById('tries2').textContent = tries2;
+}
+document.getElementById('newBtn2').addEventListener('click', newQuestion2);
+newQuestion2();
+
+/* ================= Panel III: Addieren lernen ================= */
+const demoData = buildAdditionSteps('XIV','XIX');
+let demoIndex = 0;
+function renderStep(container, step, idx){
+  const row = document.createElement('div');
+  row.className = 'steprow';
+  row.innerHTML = `<div class="stepnum">${idx+1}</div><div class="stepbody">${step.title}: ${step.body}${step.display ? `<div class="stepstring" style="margin-top:4px;">${step.display}</div>` : ''}</div>`;
+  container.appendChild(row);
+}
+function stepDemo(){
+  const log = document.getElementById('stepLog');
+  if(demoIndex >= demoData.steps.length){ return; }
+  renderStep(log, demoData.steps[demoIndex], demoIndex);
+  demoIndex++;
+  if(demoIndex >= demoData.steps.length){
+    document.getElementById('stepBtn').disabled = true;
+    document.getElementById('stepBtn').textContent = 'Fertig';
+  }
+}
+document.getElementById('stepBtn').addEventListener('click', stepDemo);
+document.getElementById('stepReset').addEventListener('click', ()=>{
+  demoIndex = 0;
+  document.getElementById('stepLog').innerHTML = '';
+  document.getElementById('stepBtn').disabled = false;
+  document.getElementById('stepBtn').textContent = 'Nächster Schritt';
+});
+
+/* Probier's selbst: fill dropdowns with a range of romans */
+const pickOptions = [4,6,8,9,12,14,17,19,23,28,34,39,44,48,57,63,74,88,93,99];
+function fillSelect(sel){
+  pickOptions.forEach(n=>{
+    const opt = document.createElement('option');
+    opt.value = toRoman(n);
+    opt.textContent = `${toRoman(n)} (${n})`;
+    sel.appendChild(opt);
+  });
+}
+const pickA = document.getElementById('pickA');
+const pickB = document.getElementById('pickB');
+fillSelect(pickA); fillSelect(pickB);
+pickA.selectedIndex = 4; pickB.selectedIndex = 9;
+document.getElementById('pickShow').addEventListener('click', ()=>{
+  const data = buildAdditionSteps(pickA.value, pickB.value);
+  const log = document.getElementById('pickLog');
+  log.style.display = 'block';
+  log.innerHTML = '';
+  data.steps.forEach((s,i)=> renderStep(log, s, i));
+});
+
+/* ================= Panel IV: Übung Addieren ================= */
+let maxSum4 = 20;
+let curA4 = null, curB4 = null;
+let score4 = 0, tries4 = 0;
+
+function newQuestion4(){
+  curA4 = Math.floor(Math.random()*maxSum4)+1;
+  curB4 = Math.floor(Math.random()*maxSum4)+1;
+  document.getElementById('additionQuestion').innerHTML =
+    `<span>${toRoman(curA4)}</span><span class="op">+</span><span>${toRoman(curB4)}</span>`;
+  document.getElementById('romanAnswer').value = '';
+  document.getElementById('feedback4').textContent = '';
+  document.getElementById('feedback4').className = 'feedback';
+  document.getElementById('solveLog4').style.display = 'none';
+  document.getElementById('solveLog4').innerHTML = '';
+  document.getElementById('romanAnswer').focus();
+}
+document.getElementById('diff4').addEventListener('click', (e)=>{
+  const b = e.target.closest('.diffbtn');
+  if(!b) return;
+  document.querySelectorAll('#diff4 .diffbtn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  maxSum4 = Number(b.dataset.range);
+  newQuestion4();
+});
+function checkAnswer4(){
+  const raw = document.getElementById('romanAnswer').value;
+  const val = fromRoman(raw);
+  const correct = curA4 + curB4;
+  const fb = document.getElementById('feedback4');
+  tries4++;
+  if(val !== null && val === correct){
+    score4++;
+    fb.textContent = `Richtig! ${toRoman(curA4)} + ${toRoman(curB4)} = ${toRoman(correct)}`;
+    fb.className = 'feedback ok';
+  } else if(val === null){
+    fb.textContent = `Das ist keine gültige römische Zahl. Richtig wäre: ${toRoman(correct)}`;
+    fb.className = 'feedback no';
+  } else {
+    fb.textContent = `Leider nicht. Richtig wäre: ${toRoman(correct)} (${correct})`;
+    fb.className = 'feedback no';
+  }
+  document.getElementById('score4').textContent = score4;
+  document.getElementById('tries4').textContent = tries4;
+}
+document.getElementById('checkBtn4').addEventListener('click', checkAnswer4);
+document.getElementById('romanAnswer').addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer4(); });
+document.getElementById('newBtn4').addEventListener('click', newQuestion4);
+document.getElementById('solveBtn4').addEventListener('click', ()=>{
+  const data = buildAdditionSteps(toRoman(curA4), toRoman(curB4));
+  const log = document.getElementById('solveLog4');
+  log.style.display = 'block';
+  log.innerHTML = '';
+  data.steps.forEach((s,i)=> renderStep(log, s, i));
+});
+newQuestion4();
+</script>
+</body>
+</html>
